@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MATLABInstrumentDriver>
+   <FileVersion>2.42</FileVersion>
+   <DriverName>P:\Ankit_Desai\DropBox\Trent\AGNMSO6014A.mdd</DriverName>
+   <DriverType>MATLAB interface object</DriverType>
+   <InstrumentType>Oscilloscope</InstrumentType>
+   <InstrumentManufacturer>Agilent</InstrumentManufacturer>
+   <InstrumentModel>MSO6014A</InstrumentModel>
+   <InstrumentVersion>1.0</InstrumentVersion>
+   <Identify>*IDN?</Identify>
+   <Reset>*RST</Reset>
+   <Selftest>*TST?</Selftest>
+   <Error>:System:Error?</Error>
+   <CreateInitCode>
+      <Code>function init(obj)
+% This function is called after the object is created.
+% OBJ is the device object.
+% End of function definition - DO NOT EDIT
+
+</Code>
+   </CreateInitCode>
+   <ConnectInitCode>
+      <Type>MCode</Type>
+      <Code>function init(obj)
+% This function is called after the object is connected.
+% OBJ is the device object.
+% End of function definition - DO NOT EDIT</Code>
+   </ConnectInitCode>
+   <CleanupCode>
+      <Type>InstrumentCommand</Type>
+   </CleanupCode>
+   <GroupInfo>
+      <Group>
+         <Name>parent</Name>
+         <Description/>
+         <Command/>
+         <Size>1</Size>
+         <Mappings>
+            <ChannelMap Command="parent1" Index="1"/>
+         </Mappings>
+         <PropertyInfo>
+            <Property>
+               <Name>timebase</Name>
+               <Location>parent</Location>
+               <CapabilityGroup>Base</CapabilityGroup>
+               <Type>InstrumentCommand</Type>
+               <Code>
+                  <Commands>
+                     <ConfigureCommand>:TIMEBASE:SCALE </ConfigureCommand>
+                     <QueryCommand>:TIMEBASE:SCALE?</QueryCommand>
+                  </Commands>
+               </Code>
+               <PermissibleType>
+                  <Type>Double</Type>
+                  <Constraint>none</Constraint>
+               </PermissibleType>
+               <DefaultValue>0</DefaultValue>
+               <ReadOnly>never</ReadOnly>
+               <Description/>
+            </Property>
+            <Property>
+               <Name>verticalscale</Name>
+               <Location>parent</Location>
+               <CapabilityGroup>Base</CapabilityGroup>
+               <Type>InstrumentCommand</Type>
+               <Code>
+                  <Commands>
+                     <ConfigureCommand>:CHANNEL1:SCALE </ConfigureCommand>
+                     <QueryCommand>:CHANNEL1:SCALE?</QueryCommand>
+                  </Commands>
+               </Code>
+               <PermissibleType>
+                  <Type>Double</Type>
+                  <Constraint>none</Constraint>
+               </PermissibleType>
+               <DefaultValue>0</DefaultValue>
+               <ReadOnly>never</ReadOnly>
+               <Description/>
+            </Property>
+         </PropertyInfo>
+         <MethodInfo>
+            <Method>
+               <Name>autoscale</Name>
+               <Location>parent</Location>
+               <CapabilityGroup>Base</CapabilityGroup>
+               <Type>MCode</Type>
+               <Code>
+                  <MCode>function autoscale(obj)
+% For group functions, OBJ is the group object. For
+% base device functions, OBJ is the device object.
+iobj = get(obj,'Interface');
+fprintf(iobj,':AUTOSCALE CHAN1');</MCode>
+               </Code>
+               <Description/>
+            </Method>
+            <Method>
+               <Name>getwaveform</Name>
+               <Location>parent</Location>
+               <CapabilityGroup>Base</CapabilityGroup>
+               <Type>MCode</Type>
+               <Code>
+                  <MCode>function [y x] = getwaveform(obj)
+% For group functions, OBJ is the group object. For
+% base device functions, OBJ is the device object.
+iobj = get(obj,'Interface');
+fprintf(iobj,':WAVEFORM:SOURCE CHAN1');
+fprintf(iobj,':ACQUIRE:POINts:AUTO off');
+fprintf(iobj,':ACQUIRE:POINts 5000');
+pause(2); % Pause until scope adjusts the waveform to the new data point setting.
+fprintf(iobj,':WAVEFORM:FORMAT BYTE');
+fprintf(iobj,':WAVEFORM:DATA?');
+raw = binblockread(iobj,'int8');
+yref = query(iobj, 'WAVEFORM:YREFERENCE?','%s','%e');
+yincr = query(iobj, 'WAVEFORM:YINCREMENT?','%s','%e');
+yorigin = query(iobj, 'WAVEFORM:YORIGIN?','%s','%e');
+y = (raw * yincr) + yorigin;
+xorigin = query(iobj, 'WAVEFORM:XORIGIN?','%s','%e');
+xincr = query(iobj, 'WAVEFORM:XINCREMENT?','%s','%e');
+ptcnt = query(iobj, 'WAVEFORM:POINTS?','%s','%e');
+xref = query(iobj, 'WAVEFORM:XREFERENCE?','%s','%e');
+x = (((0:(ptcnt-1)) * xincr) + xorigin);</MCode>
+               </Code>
+               <Description/>
+            </Method>
+         </MethodInfo>
+      </Group>
+   </GroupInfo>
+</MATLABInstrumentDriver>
